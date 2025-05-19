@@ -192,9 +192,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Display first few rows of cleaned data
-# print("\nFirst 5 rows of cleaned data:")
-# print(df_cleaned.head())
 
 # Display the updated column names after dropping RecipeYield
 print("\nUpdated Column Names after dropping RecipeYield:")
