@@ -287,6 +287,53 @@ def filter_meal_recipes(df):
     
     return df_filtered
 
+def recommend_meals_for_user(df, user_profile):
+    """
+    Recommend meals based on user's calorie goals and nutritional needs.
+    
+    Parameters:
+    df (pandas.DataFrame): DataFrame with recipe data and weight loss scores
+    user_profile (dict): User profile dictionary with calorie goals and preferences
+    
+    Returns:
+    pandas.DataFrame: Recommended meals with nutritional information
+    """
+    # Make a copy to avoid modifying the original
+    df_recommended = df.copy()
+    
+    # Calculate daily meal calorie targets (assuming 3 meals + 2 snacks)
+    meal_calorie_target = user_profile['CalorieGoal'] * 0.3  # 30% for main meals
+    snack_calorie_target = user_profile['CalorieGoal'] * 0.1  # 10% for snacks
+    
+    # Filter recipes based on calorie content
+    df_recommended = df_recommended[
+        (df_recommended['Calories'] <= meal_calorie_target) &
+        (df_recommended['WeightLossScore'] > 0.5)  # Only high-scoring recipes
+    ]
+    
+    # Sort by weight loss score and calories
+    df_recommended = df_recommended.sort_values(
+        ['WeightLossScore', 'Calories'],
+        ascending=[False, True]
+    )
+    
+    # Select top recommendations
+    recommendations = df_recommended.head(5)
+    
+    print("\n=== Meal Recommendations ===")
+    print(f"Based on your daily calorie goal of {user_profile['CalorieGoal']} calories")
+    print(f"Target calories per meal: {meal_calorie_target:.0f}")
+    print("\nRecommended Meals:")
+    
+    for idx, meal in recommendations.iterrows():
+        print(f"\n{meal['Name']}")
+        print(f"Calories: {meal['Calories']:.0f}")
+        print(f"Protein: {meal['ProteinContent']:.1f}g")
+        print(f"Fiber: {meal['FiberContent']:.1f}g")
+        print(f"Weight Loss Score: {meal['WeightLossScore']:.2f}")
+    
+    return recommendations
+
 def main():
     # Read the CSV file
     df = pd.read_csv('recipes.csv')
@@ -303,10 +350,23 @@ def main():
     # Filter meal recipes
     df_filtered = filter_meal_recipes(df_with_scores)
     
-    # Display top 10 recipes by weight loss score
-    print("\nTop 10 Recipes for Weight Loss:")
-    top_recipes = df_filtered.nlargest(10, 'WeightLossScore')
-    print(top_recipes[['Name', 'WeightLossScore', 'Calories', 'ProteinContent', 'FiberContent']])
+    # Create user profile (example values)
+    from user_profile import get_user_profile, print_user_profile
+    
+    user_profile = get_user_profile(
+        age=20,
+        gender="male",
+        weight_kg=80,
+        height_cm=175,
+        activity_level="moderate",
+        goal="moderate"
+    )
+    
+    # Print user profile
+    print_user_profile(user_profile)
+    
+    # Get meal recommendations
+    recommendations = recommend_meals_for_user(df_filtered, user_profile)
 
 if __name__ == "__main__":
     main()
