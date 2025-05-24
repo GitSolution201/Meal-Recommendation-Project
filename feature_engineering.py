@@ -50,20 +50,25 @@ def calculate_weight_loss_score(df):
     # Make a copy to avoid modifying the original
     df_scored = df.copy()
     
-    # Select nutritional columns for scoring
+    # Create a copy of nutritional columns for scoring
     nutrition_cols = ['ProteinContent', 'FiberContent', 'FatContent', 'SugarContent', 'Calories']
+    df_scored_for_scoring = df_scored[nutrition_cols].copy()
     
-    # Normalize features to 0-1 scale
+    # Normalize features to 0-1 scale for scoring only
     scaler = MinMaxScaler()
-    df_scored[nutrition_cols] = scaler.fit_transform(df_scored[nutrition_cols])
+    df_scored_for_scoring = pd.DataFrame(
+        scaler.fit_transform(df_scored_for_scoring),
+        columns=nutrition_cols,
+        index=df_scored.index
+    )
     
-    # Calculate Weight Loss Score with weighted components
+    # Calculate Weight Loss Score with weighted components using normalized values
     df_scored['WeightLossScore'] = (
-        0.5 * df_scored['ProteinContent'] +   # Highest priority (satiety)
-        0.3 * df_scored['FiberContent'] -     # Fullness and digestion
-        0.2 * df_scored['FatContent'] -       # Calorie density
-        0.1 * df_scored['SugarContent'] -     # Blood sugar spikes
-        0.05 * df_scored['Calories']          # Overall calorie control
+        0.5 * df_scored_for_scoring['ProteinContent'] +   # Highest priority (satiety)
+        0.3 * df_scored_for_scoring['FiberContent'] -     # Fullness and digestion
+        0.2 * df_scored_for_scoring['FatContent'] -       # Calorie density
+        0.1 * df_scored_for_scoring['SugarContent'] -     # Blood sugar spikes
+        0.05 * df_scored_for_scoring['Calories']          # Overall calorie control
     )
     
     # Normalize the final score to 0-1 range
