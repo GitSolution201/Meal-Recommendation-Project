@@ -100,5 +100,15 @@ if __name__ == "__main__":
     # Create sample data
     df = pd.read_csv('recipes.csv')
     
-    # Show best and worst meals
-    show_best_worst_meals(df) 
+    # Create example user profile
+    profile = get_user_profile(
+        age=30,
+        gender="male",
+        weight_kg=80,
+        height_cm=175,
+        activity_level="moderate",
+        goal="moderate"
+    )
+    
+    # Get personalized meal recommendations
+    recommend_meals_for_user(df, profile) 
