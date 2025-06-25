@@ -53,12 +53,12 @@ def main():
     # Create a user profile vector based on calorie goal and healthy targets (example values)
     #You create a "target meal profile" for the user — this is what the user is aiming for in each meal.
 
-
+    #user_vector is startig point
     user_vector = np.array([
         user_profile['CalorieGoal'] * 0.3,  # per meal
-        25,  # target protein per meal (example)
+        75,  # target protein per meal (example)
         10,  # target fat per meal (example)
-        8,   # target fiber per meal (example)
+        100,   # target fiber per meal (example)
         1.0  # ideal weight loss score
     ]).reshape(1, -1)
     #Reshape it to a 2D array because kneighbors() expects that format.
@@ -66,7 +66,7 @@ def main():
 
     
     # Fit KNN
-    knn = NearestNeighbors(n_neighbors=5, metric='euclidean')
+    knn = NearestNeighbors(n_neighbors=5, metric='manhattan')
     knn.fit(X)
     distances, indices = knn.kneighbors(user_vector)
     knn_recommendations = df_filtered.iloc[indices[0]]

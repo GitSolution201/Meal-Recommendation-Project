@@ -30,7 +30,7 @@ def show_best_worst_meals(df):
         print(f"Fiber: {meal['FiberContent']:.1f}g")
         print(f"Weight Loss Score: {meal['WeightLossScore']:.2f}")
 
-#For example, if the user’s daily goal is 2000 calories, and 30% is allocated for a main meal, the target per meal is 600 calories.
+#For example, if the user's daily goal is 2000 calories, and 30% is allocated for a main meal, the target per meal is 600 calories.
 def recommend_meals_for_user(df, user_profile):
     """
     Recommend meals based on user's calorie goals and nutritional needs.
@@ -91,6 +91,39 @@ def recommend_meals_for_user(df, user_profile):
         print(f"Fiber: {meal['FiberContent']:.1f}g")
         print(f"Weight Loss Score: {meal['WeightLossScore']:.2f}")
     
+    return recommendations
+
+def recommend_meals_knn(df, user_profile, n_recommendations=5):
+    """
+    Recommend meals using K-Nearest Neighbors based on user's nutritional targets.
+    
+    Parameters:
+    df (pandas.DataFrame): DataFrame with meal data and nutritional features
+    user_profile (dict): User profile dictionary with calorie goal and preferences
+    n_recommendations (int): Number of meals to recommend
+    
+    Returns:
+    pandas.DataFrame: Top recommended meals
+    """
+    from sklearn.neighbors import NearestNeighbors
+    import numpy as np
+    
+    knn_features = ['Calories', 'ProteinContent', 'FatContent', 'FiberContent', 'WeightLossScore']
+    X = df[knn_features]
+    
+    # Create user vector based on profile and example targets
+    user_vector = np.array([
+        user_profile['CalorieGoal'] * 0.3,  # per meal
+        25,  # target protein per meal (example)
+        10,  # target fat per meal (example)
+        8,   # target fiber per meal (example)
+        1.0  # ideal weight loss score
+    ]).reshape(1, -1)
+    
+    knn = NearestNeighbors(n_neighbors=n_recommendations, metric='euclidean')
+    knn.fit(X)
+    distances, indices = knn.kneighbors(user_vector)
+    recommendations = df.iloc[indices[0]]
     return recommendations
 
 if __name__ == "__main__":
