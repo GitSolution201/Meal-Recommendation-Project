@@ -7,6 +7,8 @@ from feature_engineering import (
 )
 from meal_recommendations import show_best_worst_meals, recommend_meals_for_user
 from user_profile import get_user_profile
+from sklearn.neighbors import NearestNeighbors
+import numpy as np
 
 def main():
     # Read the CSV file
@@ -41,6 +43,35 @@ def main():
     recommendations = recommend_meals_for_user(df_filtered, user_profile)
     print("\nRecommended Meals DataFrame:")
     print(recommendations)
+
+    # --- KNN-based Recommendation ---
+    # Define the features to use for KNN
+    knn_features = ['Calories', 'ProteinContent', 'FatContent', 'FiberContent', 'WeightLossScore']
+    #You define the numerical features that describe each meal.
+    X = df_filtered[knn_features]
+    
+    # Create a user profile vector based on calorie goal and healthy targets (example values)
+    #You create a "target meal profile" for the user — this is what the user is aiming for in each meal.
+
+
+    user_vector = np.array([
+        user_profile['CalorieGoal'] * 0.3,  # per meal
+        25,  # target protein per meal (example)
+        10,  # target fat per meal (example)
+        8,   # target fiber per meal (example)
+        1.0  # ideal weight loss score
+    ]).reshape(1, -1)
+    #Reshape it to a 2D array because kneighbors() expects that format.
+
+
+    
+    # Fit KNN
+    knn = NearestNeighbors(n_neighbors=5, metric='euclidean')
+    knn.fit(X)
+    distances, indices = knn.kneighbors(user_vector)
+    knn_recommendations = df_filtered.iloc[indices[0]]
+    print("\nKNN-based Recommended Meals:")
+    print(knn_recommendations[['Name'] + knn_features])
 
 if __name__ == "__main__":
     main()
