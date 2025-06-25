@@ -5,7 +5,8 @@ from feature_engineering import (
     calculate_weight_loss_score,
     filter_meal_recipes
 )
-from meal_recommendations import show_best_worst_meals
+from meal_recommendations import show_best_worst_meals, recommend_meals_for_user
+from user_profile import get_user_profile
 
 def main():
     # Read the CSV file
@@ -26,8 +27,20 @@ def main():
     # Filter meal recipes
     df_filtered = filter_meal_recipes(df_with_scores)
     
-    # Show best and worst meals
-    show_best_worst_meals(df_filtered)
+    # Example user profile (replace with dynamic/user input as needed)
+    user_profile = get_user_profile(
+        age=30,
+        gender="male",
+        weight_kg=80,
+        height_cm=175,
+        activity_level="moderate",
+        goal="moderate"
+    )
+    
+    # Recommend meals for user
+    recommendations = recommend_meals_for_user(df_filtered, user_profile)
+    print("\nRecommended Meals DataFrame:")
+    print(recommendations)
 
 if __name__ == "__main__":
     main()

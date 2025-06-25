@@ -30,6 +30,7 @@ def show_best_worst_meals(df):
         print(f"Fiber: {meal['FiberContent']:.1f}g")
         print(f"Weight Loss Score: {meal['WeightLossScore']:.2f}")
 
+#For example, if the user’s daily goal is 2000 calories, and 30% is allocated for a main meal, the target per meal is 600 calories.
 def recommend_meals_for_user(df, user_profile):
     """
     Recommend meals based on user's calorie goals and nutritional needs.
@@ -48,7 +49,7 @@ def recommend_meals_for_user(df, user_profile):
     meal_calorie_target = user_profile['CalorieGoal'] * 0.3  # 30% for main meals
     
     print(f"\nInitial dataset size: {len(df_recommended)} recipes")
-    
+    #The function first tries to recommend meals that strictly fit the user's calorie target for a meal. However, sometimes there may be no recipes that meet both the calorie and weight loss score criteria
     # Filter recipes based on calorie content
     df_recommended = df_recommended[
         (df_recommended['Calories'] <= meal_calorie_target) &

@@ -35,6 +35,7 @@ def select_features_for_feature_Engineering(df):
         print(f"- {col}")
     
     return df_selected
+#You are calculating a Weight Loss Score to quantitatively evaluate and compare how suitable each recipe is for weight loss, based on its nutritional content.
 
 def calculate_weight_loss_score(df):
     """
@@ -55,6 +56,7 @@ def calculate_weight_loss_score(df):
     df_scored_for_scoring = df_scored[nutrition_cols].copy()
     
     # Normalize features to 0-1 scale for scoring only
+    #This is important because features with larger ranges can dominate those with smaller ranges when calculating scores, distances, or when used in machine learning models.
     scaler = MinMaxScaler()
     df_scored_for_scoring = pd.DataFrame(
         scaler.fit_transform(df_scored_for_scoring),
@@ -78,6 +80,7 @@ def calculate_weight_loss_score(df):
     print("\nWeight Loss Score Summary:")
     print(f"Score Range: {df_scored['WeightLossScore'].min():.2f} to {df_scored['WeightLossScore'].max():.2f}")
     print(f"Mean Score: {df_scored['WeightLossScore'].mean():.2f}")
+    print("--------------------------------",df_scored['WeightLossScore'])
     
     return df_scored
 

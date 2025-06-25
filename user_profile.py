@@ -1,7 +1,8 @@
 def get_user_profile(age, gender, weight_kg, height_cm, activity_level="moderate", goal="moderate"):
     """
     Calculates BMR, BMI, and recommended daily calorie intake for weight loss.
-
+    BMR is the number of calories your body needs to maintain basic physiological functions at rest
+    BMI is a numerical value calculated from your height and weight, used to assess whether you are underweight, normal weight, overweight, or obese
     Parameters:
     - age (int): Age in years
     - gender (str): 'male' or 'female'
@@ -9,7 +10,7 @@ def get_user_profile(age, gender, weight_kg, height_cm, activity_level="moderate
     - height_cm (float): Height in centimeters
     - activity_level (str): 'sedentary', 'light', 'moderate', 'active', or 'very_active'
     - goal (str): 'mild', 'moderate', 'aggressive'
-
+    TDEE is the total number of calories your body burns in a day, including all activities (not just at rest).
     Returns:
     - dict: User profile including BMI, BMR, TDEE, and calorie goal
     """

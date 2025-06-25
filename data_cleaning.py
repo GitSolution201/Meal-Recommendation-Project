@@ -25,6 +25,7 @@ def perform_EDA(df):
         df_clean = df_clean.drop_duplicates()
         print(f"Rows after removing duplicates: {len(df_clean)}")
     
+    print("-0-----------",df_clean.columns)
     # 1. Drop RecipeYield column as it has low utility
     df_clean = df_clean.drop('RecipeYield', axis=1)
     
