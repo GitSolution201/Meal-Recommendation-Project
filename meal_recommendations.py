@@ -126,6 +126,32 @@ def recommend_meals_knn(df, user_profile, n_recommendations=5):
     recommendations = df.iloc[indices[0]]
     return recommendations
 
+def precision_at_k_knn(recommended_meals, relevant_meal_ids, k):
+    """
+    Calculate Precision@K for KNN recommendations.
+    recommended_meals: DataFrame of recommended meals (must have an 'id' or unique identifier column)
+    relevant_meal_ids: set or list of meal IDs that are relevant (liked by user)
+    k: number of top recommendations to consider
+    Returns: precision@k (float)
+    """
+    top_k = recommended_meals.head(k)
+    recommended_ids = set(top_k['RecipeId']) if 'RecipeId' in top_k.columns else set(top_k.index)
+    relevant_recommended = recommended_ids & set(relevant_meal_ids)
+    return len(relevant_recommended) / k if k > 0 else 0.0
+
+def recall_at_k_knn(recommended_meals, relevant_meal_ids, k):
+    """
+    Calculate Recall@K for KNN recommendations.
+    recommended_meals: DataFrame of recommended meals (must have an 'id' or unique identifier column)
+    relevant_meal_ids: set or list of meal IDs that are relevant (liked by user)
+    k: number of top recommendations to consider
+    Returns: recall@k (float)
+    """
+    top_k = recommended_meals.head(k)
+    recommended_ids = set(top_k['RecipeId']) if 'RecipeId' in top_k.columns else set(top_k.index)
+    relevant_recommended = recommended_ids & set(relevant_meal_ids)
+    return len(relevant_recommended) / len(relevant_meal_ids) if len(relevant_meal_ids) > 0 else 0.0
+
 if __name__ == "__main__":
     # Example usage
     import pandas as pd

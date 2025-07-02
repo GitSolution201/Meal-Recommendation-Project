@@ -25,7 +25,6 @@ def perform_EDA(df):
         df_clean = df_clean.drop_duplicates()
         print(f"Rows after removing duplicates: {len(df_clean)}")
     
-    print("-0-----------",df_clean.columns)
     # 1. Drop RecipeYield column as it has low utility
     df_clean = df_clean.drop('RecipeYield', axis=1)
     
@@ -62,11 +61,11 @@ def perform_EDA(df):
     df_clean['Images'] = df_clean['Images'].fillna("")
     
     # Print summary of changes
-    print("\nData Cleaning Summary:")
-    print(f"Original shape: {df.shape}")
-    print(f"New shape: {df_clean.shape}")
-    print("\nMissing values after cleaning:")
-    print(df_clean.isnull().sum().sort_values(ascending=False))
+    # print("\nData Cleaning Summary:")
+    # print(f"Original shape: {df.shape}")
+    # print(f"New shape: {df_clean.shape}")
+    # print("\nMissing values after cleaning:")
+    # print(df_clean.isnull().sum().sort_values(ascending=False))
     
     return df_clean
 
