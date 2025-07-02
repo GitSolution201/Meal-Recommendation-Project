@@ -32,10 +32,10 @@ def main():
     print(df_cleaned.columns)
 
     # Call EDA graphs function
-    EDA_graphs(df_cleaned)
+    # EDA_graphs(df_cleaned)
 
     # Check data quality
-    quality_metrics = check_data_quality(df_cleaned)
+    # quality_metrics = check_data_quality(df_cleaned)
     
     # Select features for feature engineering
     df_selected = select_features_for_feature_Engineering(df_cleaned)
@@ -44,6 +44,9 @@ def main():
     
     # Filter meal recipes
     df_filtered = filter_meal_recipes(df_with_scores)
+
+    # Save top 10 entries of df_filtered to CSV for inspection
+    df_filtered.head(10).to_csv('df_filtered_top10.csv', index=False)
     
     # Example user profile (replace with dynamic/user input as needed)
     user_profile = get_user_profile(
@@ -61,8 +64,21 @@ def main():
     print(recommendations)
 
     # --- KNN-based Recommendation ---
-    knn_features = ['Calories', 'ProteinContent', 'FatContent', 'FiberContent', 'WeightLossScore']
-    knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=5)
+    knn_features = [
+    'Calories',
+    'FatContent',
+    'SaturatedFatContent',
+    'CholesterolContent',
+    'SodiumContent',
+    'CarbohydrateContent',
+    'FiberContent',
+    'SugarContent',
+    'ProteinContent'
+]
+    # inputing features that defines the similarity / distance between meals 
+    knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=9)
+    print("fiiltered ------------",df_filtered)
+    
     print("\nKNN-based Recommended Meals:")
     print(knn_recommendations[['Name'] + knn_features])
 
