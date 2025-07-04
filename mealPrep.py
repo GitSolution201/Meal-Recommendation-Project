@@ -76,7 +76,7 @@ def main():
     'ProteinContent'
 ]
     # inputing features that defines the similarity / distance between meals 
-    knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=9)
+    knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=3)
     print("fiiltered ------------",df_filtered)
     
     print("\nKNN-based Recommended Meals:")
@@ -84,9 +84,14 @@ def main():
 
     # --- Precision and Recall for KNN ---
     # Simulate relevant meal IDs (for demo, pick 3 from recommendations)
-    relevant_meal_ids = set(knn_recommendations['RecipeId'].head(3)) if 'RecipeId' in knn_recommendations.columns else set(knn_recommendations.index[:3])
-    k = 5
+    relevant_meal_ids = set(knn_recommendations['RecipeId'].head(5)) if 'RecipeId' in knn_recommendations.columns else set(knn_recommendations.index[:10])
+    #relevant_meal_ids are those meals user prefered 
+    print(relevant_meal_ids)
+    k = 10
+
+    # so precision is taking the todal number of recommendations plus user liked recommendations and then k is evalution of restults from top to botom
     precision = precision_at_k_knn(knn_recommendations, relevant_meal_ids, k)
+    
     recall = recall_at_k_knn(knn_recommendations, relevant_meal_ids, k)
     print(f"\nPrecision@{k} for KNN: {precision:.2f}")
     print(f"Recall@{k} for KNN: {recall:.2f}")

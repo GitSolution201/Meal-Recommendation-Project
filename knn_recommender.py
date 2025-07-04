@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-def knn_recommend_meals(df_filtered, user_profile, knn_features=None, n_neighbors=5):
+def knn_recommend_meals(df_filtered, user_profile, knn_features=None, n_neighbors=3):
     if knn_features is None:
         knn_features = [
     'Calories',
@@ -32,6 +32,7 @@ def knn_recommend_meals(df_filtered, user_profile, knn_features=None, n_neighbor
     #creating a perfect target meal profile for the user 
 
     knn = NearestNeighbors(n_neighbors=n_neighbors, metric='manhattan')
+    #n_neighbors is the number of neighbors to consider for the recommendation
     # here we are calculating the distancd between the user_vector and the meals in the dataset (X)
     knn.fit(X)
 
