@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from eda_graphs import EDA_graphs
 from knn_recommender import knn_recommend_meals
+import os
+from feedback import save_feedback_per_meal
 
 def main():
     # Read the CSV file
@@ -48,21 +50,26 @@ def main():
     # Save top 10 entries of df_filtered to CSV for inspection
     df_filtered.head(10).to_csv('df_filtered_top10.csv', index=False)
     
-    # Example user profile (replace with dynamic/user input as needed)
+    # Example user profile (static values)
+    age = 30
+    gender = "male"
+    weight_kg = 80
+    height_cm = 175
+    activity_level = "active"
+    goal = "moderate"
     user_profile = get_user_profile(
-        age=30,
-        gender="male",
-        weight_kg=80,
-        height_cm=175,
-        activity_level="moderate",
-        goal="moderate"
+        age=age,
+        gender=gender,
+        weight_kg=weight_kg,
+        height_cm=height_cm,
+        activity_level=activity_level,
+        goal=goal
     )
     
     # Recommend meals for user
     recommendations = recommend_meals_for_user(df_filtered, user_profile)
     print("\nRecommended Meals DataFrame:")
-    print(recommendations)
-
+    
     # --- KNN-based Recommendation ---
     knn_features = [
     'Calories',
@@ -77,9 +84,6 @@ def main():
 ]
     # inputing features that defines the similarity / distance between meals 
     knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=3)
-    print("fiiltered ------------",df_filtered)
-    
-    print("\nKNN-based Recommended Meals:")
     print(knn_recommendations[['Name'] + knn_features])
 
     # --- Precision and Recall for KNN ---
@@ -95,6 +99,26 @@ def main():
     recall = recall_at_k_knn(knn_recommendations, relevant_meal_ids, k)
     print(f"\nPrecision@{k} for KNN: {precision:.2f}")
     print(f"Recall@{k} for KNN: {recall:.2f}")
+
+    # --- User Feedback Section (per meal, with meal number) ---
+    for idx, meal_row in enumerate(knn_recommendations.head(3).iterrows(), 1):
+        _, meal_row_data = meal_row
+        meal_name = meal_row_data.get('Name', '')
+        response = input(f"Did you like the meal '{meal_name}'? (y/n): ").strip().lower()
+        liked = response == 'y'
+        # Add meal_number to the row
+        meal_row_data = meal_row_data.copy()
+        meal_row_data['meal_number'] = idx
+        single_meal_df = pd.DataFrame([meal_row_data])
+        # Extract user info for feedback
+        user_profile_dict = {
+            'age': user_profile.get('age', ''),
+            'gender': user_profile.get('gender', ''),
+            'goal': user_profile.get('goal', ''),
+            'activity_level': user_profile.get('activity_level', '')
+        }
+        save_feedback_per_meal(user_profile_dict, single_meal_df, liked)
+    print("Your feedback for each meal has been saved to user_feedback.csv.")
 
 if __name__ == "__main__":
     main()
