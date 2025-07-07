@@ -2,11 +2,14 @@ import os
 import csv
 from datetime import datetime
 
-def save_feedback_per_meal(user_profile, knn_recommendations, liked, feedback_file='user_feedback.csv'):
+def save_feedback_per_meal(age, gender, activity_level, goal, knn_recommendations, liked, feedback_file='user_feedback.csv'):
     """
     Save feedback for each meal in the plan, including user and meal info, meal number, and liked label.
     Args:
-        user_profile (dict): User profile info (age, gender, goal, activity_level).
+        age (int/str): User's age.
+        gender (str): User's gender.
+        activity_level (str): User's activity level.
+        goal (str): User's goal.
         knn_recommendations (pd.DataFrame): DataFrame with recommended meals.
         liked (bool): Feedback label for the meal plan.
         feedback_file (str): Path to the feedback CSV file.
@@ -17,7 +20,7 @@ def save_feedback_per_meal(user_profile, knn_recommendations, liked, feedback_fi
         if not file_exists:
             writer.writerow([
                 'date',
-                'user_age', 'user_gender', 'user_goal', 'activity_level',
+                'age', 'gender', 'activity_level', 'goal',
                 'meal_number',
                 'meal_name', 'meal_calories', 'meal_protein',
                 'meal_type_breakfast', 'meal_type_dinner',
@@ -35,10 +38,10 @@ def save_feedback_per_meal(user_profile, knn_recommendations, liked, feedback_fi
             meal_number = row.get('meal_number', '')
             writer.writerow([
                 datetime.now().strftime('%Y-%m-%d'),
-                user_profile.get('age', ''),
-                user_profile.get('gender', ''),
-                user_profile.get('goal', ''),
-                user_profile.get('activity_level', ''),
+                age,
+                gender,
+                activity_level,
+                goal,
                 meal_number,
                 meal_name,
                 meal_calories,

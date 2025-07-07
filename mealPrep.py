@@ -111,13 +111,8 @@ def main():
         meal_row_data['meal_number'] = idx
         single_meal_df = pd.DataFrame([meal_row_data])
         # Extract user info for feedback
-        user_profile_dict = {
-            'age': user_profile.get('age', ''),
-            'gender': user_profile.get('gender', ''),
-            'goal': user_profile.get('goal', ''),
-            'activity_level': user_profile.get('activity_level', '')
-        }
-        save_feedback_per_meal(user_profile_dict, single_meal_df, liked)
+       
+        save_feedback_per_meal(age,gender,activity_level,goal, single_meal_df, liked)
     print("Your feedback for each meal has been saved to user_feedback.csv.")
 
 if __name__ == "__main__":
