@@ -43,19 +43,21 @@ def main():
     df_selected = select_features_for_feature_Engineering(df_cleaned)
     # Calculate weight loss score
     df_with_scores = calculate_weight_loss_score(df_selected)
-    
+    print("weight loss scores------",df_with_scores)
     # Filter meal recipes
     df_filtered = filter_meal_recipes(df_with_scores)
 
-    # Save top 10 entries of df_filtered to CSV for inspection
+    # Print and save top 10 entries of df_filtered to CSV for inspection
+    print("\nTop 10 rows of data passed to KNN (df_filtered):")
+    print(df_filtered.head(10))
     df_filtered.head(10).to_csv('df_filtered_top10.csv', index=False)
     
     # Example user profile (static values)
-    age = 30
-    gender = "male"
-    weight_kg = 80
+    age = 89
+    gender = "female"
+    weight_kg = 180
     height_cm = 175
-    activity_level = "active"
+    activity_level = "light"
     goal = "moderate"
     user_profile = get_user_profile(
         age=age,
@@ -65,9 +67,9 @@ def main():
         activity_level=activity_level,
         goal=goal
     )
-    
+    print("---------------------profile",user_profile)
     # Recommend meals for user
-    recommendations = recommend_meals_for_user(df_filtered, user_profile)
+    # recommendations = recommend_meals_for_user(df_filtered, user_profile)
     print("\nRecommended Meals DataFrame:")
     
     # --- KNN-based Recommendation ---
@@ -83,6 +85,7 @@ def main():
     'ProteinContent'
 ]
     # inputing features that defines the similarity / distance between meals 
+    
     knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=3)
     print(knn_recommendations[['Name'] + knn_features])
 
@@ -100,19 +103,18 @@ def main():
     print(f"\nPrecision@{k} for KNN: {precision:.2f}")
     print(f"Recall@{k} for KNN: {recall:.2f}")
 
-    # --- User Feedback Section (per meal, with meal number) ---
+    # --- User Feedback Section (per meal, with BMI and BMR) ---
+    bmi = user_profile['BMI']
+    bmr = user_profile['BMR']
     for idx, meal_row in enumerate(knn_recommendations.head(3).iterrows(), 1):
         _, meal_row_data = meal_row
         meal_name = meal_row_data.get('Name', '')
         response = input(f"Did you like the meal '{meal_name}'? (y/n): ").strip().lower()
         liked = response == 'y'
-        # Add meal_number to the row
+        # Add meal_number to the row if needed
         meal_row_data = meal_row_data.copy()
-        meal_row_data['meal_number'] = idx
         single_meal_df = pd.DataFrame([meal_row_data])
-        # Extract user info for feedback
-       
-        save_feedback_per_meal(age,gender,activity_level,goal, single_meal_df, liked)
+        save_feedback_per_meal(age, gender, activity_level, goal, bmi, bmr, single_meal_df, liked)
     print("Your feedback for each meal has been saved to user_feedback.csv.")
 
 if __name__ == "__main__":
