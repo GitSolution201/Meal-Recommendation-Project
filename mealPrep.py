@@ -50,7 +50,14 @@ def main():
     # Print and save top 10 entries of df_filtered to CSV for inspection
     print("\nTop 10 rows of data passed to KNN (df_filtered):")
     print(df_filtered.head(10))
-    df_filtered.head(10).to_csv('df_filtered_top10.csv', index=False)
+    df_filtered.head(40).to_csv('df_filtered_top10.csv', index=False)
+    from sklearn.model_selection import train_test_split
+    # Save all of df_filtered to CSV for use in training
+    # Split into train and test files
+    train_df, test_df = train_test_split(df_filtered, test_size=0.2, random_state=42)
+    train_df.to_csv('filtered_meals_train.csv', index=False)
+    test_df.to_csv('filtered_meals_test.csv', index=False)
+    print("Train and test files created!")
     
     # Example user profile (static values)
     age = 89
@@ -121,6 +128,6 @@ if __name__ == "__main__":
     main()
 
 
-# Display the updated column names after dropping RecipeYield
+# Display the updated column names after dropping RecipeYield:
 print("\nUpdated Column Names after dropping RecipeYield:")
 

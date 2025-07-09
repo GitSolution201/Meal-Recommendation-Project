@@ -74,13 +74,6 @@ def calculate_weight_loss_score(df):
     )
     
     # Normalize the final score to 0-1 range
-    df_scored['WeightLossScore'] = (df_scored['WeightLossScore'] - df_scored['WeightLossScore'].min()) / \
-                                  (df_scored['WeightLossScore'].max() - df_scored['WeightLossScore'].min())
-    
-    print("\nWeight Loss Score Summary:")
-    print(f"Score Range: {df_scored['WeightLossScore'].min():.2f} to {df_scored['WeightLossScore'].max():.2f}")
-    print(f"Mean Score: {df_scored['WeightLossScore'].mean():.2f}")
-    print("--------------------------------",df_scored['WeightLossScore'])
     
     return df_scored
 
