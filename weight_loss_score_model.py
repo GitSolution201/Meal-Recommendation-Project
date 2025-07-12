@@ -1,19 +1,10 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import classification_report, accuracy_score
 from sklearn.metrics import mean_squared_error, r2_score
-
-# Load meal data
-meals = pd.read_csv('meals.csv')
-
-# Apply the WeightLossScore formula
-meals['WeightLossScore'] = (
-    0.5 * meals['ProteinContent'] +
-    0.3 * meals['FiberContent'] -
-    0.2 * meals['FatContent'] -
-    0.1 * meals['SugarContent'] -
-    0.05 * meals['Calories']
-)
+# Load classified meals data
+meals = pd.read_csv('classified_meals.csv')
 
 # Features to use (all available nutrition columns)
 features = [
@@ -21,9 +12,8 @@ features = [
     'SodiumContent', 'CarbohydrateContent', 'FiberContent', 'SugarContent', 'ProteinContent'
 ]
 
-# Prepare data
 X = meals[features]
-y = meals['WeightLossScore']
+y = meals['IsGoodMeal']
 
 # Train/test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

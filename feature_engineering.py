@@ -111,9 +111,55 @@ def filter_meal_recipes(df):
     
     return df_filtered
 
+def show_weight_loss_score_distribution(df):
+    """
+    Print and plot the distribution, min, and max of the WeightLossScore column.
+    Args:
+        df (pd.DataFrame): DataFrame with WeightLossScore column
+    """
+    import matplotlib.pyplot as plt
+    print("\nWeightLossScore Distribution:")
+    print(df['WeightLossScore'].describe())
+    min_val = df['WeightLossScore'].min()
+    max_val = df['WeightLossScore'].max()
+    mean_val = df['WeightLossScore'].mean()
+    print(f"Min: {min_val:.2f}")
+    print(f"Max: {max_val:.2f}")
+    print(f"Mean: {mean_val:.2f}")
+    plt.figure(figsize=(8, 5))
+    plt.hist(df['WeightLossScore'], bins=30, color='skyblue', edgecolor='black')
+    plt.xlabel('WeightLossScore')
+    plt.ylabel('Number of Meals')
+    plt.title('Distribution of WeightLossScore')
+    plt.grid(axis='y', alpha=0.75)
+    # Highlight min and max values
+    plt.axvline(min_val, color='red', linestyle='dashed', linewidth=2, label=f'Min: {min_val:.2f}')
+    plt.axvline(max_val, color='green', linestyle='dashed', linewidth=2, label=f'Max: {max_val:.2f}')
+    plt.legend()
+    plt.show()
+
+def classify_meal_goodness_by_percentile(df, percentile=0.8):
+    """
+    Classify meals as good (1) or not good (0) based on whether WeightLossScore is above the given percentile.
+    Args:
+        df (pd.DataFrame): DataFrame with WeightLossScore column
+        percentile (float): Percentile threshold (e.g., 0.8 for top 20%)
+    Returns:
+        pd.DataFrame: DataFrame with IsGoodMeal column
+    """
+    df = df.copy()
+    threshold = df['WeightLossScore'].quantile(percentile)
+    print(f"Using {percentile*100:.0f}th percentile threshold {threshold:.3f} for IsGoodMeal classification.")
+    df['IsGoodMeal'] = (df['WeightLossScore'] > threshold).astype(int)
+    return df
+
 if __name__ == "__main__":
     # Example usage
     df = pd.read_csv('recipes.csv')
     df_selected = select_features_for_feature_Engineering(df)
     df_scored = calculate_weight_loss_score(df_selected)
-    df_filtered = filter_meal_recipes(df_scored) 
+    show_weight_loss_score_distribution(df_scored)
+    df_classified = classify_meal_goodness_by_percentile(df_scored, percentile=0.8)
+    print("--------------------",df_classified[['WeightLossScore', 'IsGoodMeal']].head())
+    df_classified.to_csv('classified_meals.csv', index=False)
+    df_filtered = filter_meal_recipes(df_classified) 

@@ -22,11 +22,11 @@ def knn_recommend_meals(df_filtered, user_profile, knn_features=None, n_neighbor
     10,   # FatContent (example)
     3,    # SaturatedFatContent (example)
     50,   # CholesterolContent (example)
-    500,  # SodiumContent (example)
+    25,  # SodiumContent (example)
     60,   # CarbohydrateContent (example)
     8,    # FiberContent (example)
     10,   # SugarContent (example)
-    25    # ProteinContent (example)
+    500    # ProteinContent (example)
 ]).reshape(1, -1)
 
     #creating a perfect target meal profile for the user 

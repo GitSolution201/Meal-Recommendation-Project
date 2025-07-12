@@ -3,7 +3,9 @@ from data_cleaning import perform_EDA, check_data_quality
 from feature_engineering import (
     select_features_for_feature_Engineering,
     calculate_weight_loss_score,
-    filter_meal_recipes
+    filter_meal_recipes,
+    show_weight_loss_score_distribution,
+    classify_meal_goodness_by_percentile
 )
 from meal_recommendations import show_best_worst_meals, recommend_meals_for_user, precision_at_k_knn, recall_at_k_knn
 from user_profile import get_user_profile
@@ -34,32 +36,30 @@ def main():
     print(df_cleaned.columns)
 
     # Call EDA graphs function
-    # EDA_graphs(df_cleaned)
+    EDA_graphs(df_cleaned)
 
     # Check data quality
     # quality_metrics = check_data_quality(df_cleaned)
     
     # Select features for feature engineering
+    
     df_selected = select_features_for_feature_Engineering(df_cleaned)
     # Calculate weight loss score
     df_with_scores = calculate_weight_loss_score(df_selected)
     print("weight loss scores------",df_with_scores)
+    # Show distribution of WeightLossScore
+    show_weight_loss_score_distribution(df_with_scores)
+    # Classify meals as good or not good using 80th percentile threshold
+    df_classified = classify_meal_goodness_by_percentile(df_with_scores, percentile=0.8)
+    df_classified.to_csv('classified_meals.csv', index=False)
     # Filter meal recipes
-    df_filtered = filter_meal_recipes(df_with_scores)
-
+    df_filtered = df_classified
+    # filter_meal_recipes(df_classified)
+    
     # Print and save top 10 entries of df_filtered to CSV for inspection
     print("\nTop 10 rows of data passed to KNN (df_filtered):")
     print(df_filtered.head(10))
-    df_filtered.head(40).to_csv('df_filtered_top10.csv', index=False)
-    from sklearn.model_selection import train_test_split
-    # Save all of df_filtered to CSV for use in training
-    # Split into train and test files
-    train_df, test_df = train_test_split(df_filtered, test_size=0.2, random_state=42)
-    train_df.to_csv('filtered_meals_train.csv', index=False)
-    test_df.to_csv('filtered_meals_test.csv', index=False)
-    print("Train and test files created!")
-    
-    # Example user profile (static values)
+    # Add user info columns to the DataFrame before saving
     age = 89
     gender = "female"
     weight_kg = 180
@@ -74,7 +74,15 @@ def main():
         activity_level=activity_level,
         goal=goal
     )
-    print("---------------------profile",user_profile)
+    df_to_save = df_filtered.head(40).copy()
+    df_to_save['BMI'] = user_profile['BMI']
+    df_to_save['BMR'] = user_profile['BMR']
+    df_to_save['Age'] = age
+    df_to_save['Weight'] = weight_kg
+    df_to_save.to_csv('df_filtered_top10.csv', index=False)
+   
+    # Example user profile (static values)
+    
     # Recommend meals for user
     # recommendations = recommend_meals_for_user(df_filtered, user_profile)
     print("\nRecommended Meals DataFrame:")
@@ -107,8 +115,8 @@ def main():
     precision = precision_at_k_knn(knn_recommendations, relevant_meal_ids, k)
     
     recall = recall_at_k_knn(knn_recommendations, relevant_meal_ids, k)
-    print(f"\nPrecision@{k} for KNN: {precision:.2f}")
-    print(f"Recall@{k} for KNN: {recall:.2f}")
+    print(f"\nPrecision--------@{k} for KNN: {precision:.2f}")
+    print(f"Recall-----------@{k} for KNN: {recall:.2f}")
 
     # --- User Feedback Section (per meal, with BMI and BMR) ---
     bmi = user_profile['BMI']
