@@ -18,7 +18,8 @@ def select_features_for_feature_Engineering(df):
     # List of columns to drop
     columns_to_drop = [
         'RecipeId', 'AuthorId', 'AuthorName', 
-        'Images', 'Description', 'DatePublished', 
+        # 'Images',  # Do not drop Images column
+        'Description', 'DatePublished', 
         'RecipeYield', 'RecipeIngredientQuantities', 
         'ReviewCount', 'AggregatedRating'
     ]
@@ -70,7 +71,7 @@ def calculate_weight_loss_score(df, user_profile=None):
     
     # Calculate base Weight Loss Score with weighted components using normalized values
     base_score = (
-        10 * df_scored_for_scoring['ProteinContent'] +      # High priority (satiety)
+        5 * df_scored_for_scoring['ProteinContent'] +      # High priority (satiety)
         5 * df_scored_for_scoring['FiberContent'] -        # Fullness and digestion
         5 * df_scored_for_scoring['FatContent'] -          # Calorie density
         5 * df_scored_for_scoring['SugarContent'] -        # Blood sugar spikes
@@ -216,4 +217,7 @@ if __name__ == "__main__":
     df_classified = classify_meal_goodness_by_percentile(df_scored, percentile=0.8)
     print("--------------------",df_classified[['WeightLossScore', 'IsGoodMeal']].head())
     df_classified.to_csv('classified_meals.csv', index=False)
+    # Print the number of good and non-good meals
+    print('Number of good meals:', (df_classified['IsGoodMeal'] == 1).sum())
+    print('Number of non-good meals:', (df_classified['IsGoodMeal'] == 0).sum())
     df_filtered = filter_meal_recipes(df_classified) 

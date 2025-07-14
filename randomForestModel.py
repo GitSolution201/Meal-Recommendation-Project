@@ -6,6 +6,8 @@ from sklearn.metrics import classification_report, accuracy_score, confusion_mat
 import matplotlib.pyplot as plt
 from sklearn.model_selection import learning_curve
 import numpy as np
+import os
+import requests
 
 # Load classified meals data
 meals = pd.read_csv('classified_meals.csv')
@@ -98,4 +100,32 @@ cm = confusion_matrix(y_test, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm)
 disp.plot(cmap='Blues')
 plt.title('Confusion Matrix')
-plt.show() 
+plt.show()
+
+def save_meal_images_with_labels(predictions_csv):
+    df = pd.read_csv(predictions_csv)
+    os.makedirs('meal_images/Healthy', exist_ok=True)
+    os.makedirs('meal_images/Non-Healthy', exist_ok=True)
+    for idx, row in df.iterrows():
+        image_path = str(row.get('Images', ''))
+        meal_name = str(row.get('Name', f'meal_{idx}')).replace('/', '_').replace('\\', '_').replace(' ', '_')
+        label = 'Healthy' if row.get('PredictedLabel', 0) == 1 else 'Non-Healthy'
+        save_path = f"meal_images/{label}/{meal_name}_{idx}.jpg"
+        if image_path.startswith('http'):
+            try:
+                img_data = requests.get(image_path, timeout=10).content
+                with open(save_path, 'wb') as handler:
+                    handler.write(img_data)
+            except Exception as e:
+                print(f"Failed to download {image_path}: {e}")
+        elif os.path.exists(image_path):
+            try:
+                from shutil import copyfile
+                copyfile(image_path, save_path)
+            except Exception as e:
+                print(f"Failed to copy {image_path}: {e}")
+        else:
+            print(f"Image not found or unsupported format: {image_path}")
+
+# Uncomment to run after predictions are saved:
+save_meal_images_with_labels('random_forest_test_predictions.csv') 

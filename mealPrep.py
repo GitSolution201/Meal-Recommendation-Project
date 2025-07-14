@@ -65,8 +65,11 @@ def main():
     # Show distribution of WeightLossScore
     show_weight_loss_score_distribution(df_with_scores)
     # Classify meals as good or not good using 80th percentile threshold
-    df_classified = classify_meal_goodness_by_percentile(df_with_scores, percentile=0.8)
+    df_classified = classify_meal_goodness_by_percentile(df_with_scores, percentile=0.5)
     df_classified.to_csv('classified_meals.csv', index=False)
+    print('Number of good meals:', (df_classified['IsGoodMeal'] == 1).sum())
+    print('Number of non-good meals:', (df_classified['IsGoodMeal'] == 0).sum())
+   
     # Filter meal recipes
     df_filtered = df_classified
     # filter_meal_recipes(df_classified)
