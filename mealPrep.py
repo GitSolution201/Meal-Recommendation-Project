@@ -44,9 +44,9 @@ def main():
     # Select features for feature engineering
     
     df_selected = select_features_for_feature_Engineering(df_cleaned)
-    age = 89
-    gender = "female"
-    weight_kg = 100
+    age = 40
+    gender = "male"
+    weight_kg = 120
     height_cm = 175
     activity_level = "moderate"
     goal = "moderate"
@@ -58,33 +58,35 @@ def main():
         activity_level=activity_level,
         goal=goal
     )
-   
+
     # Calculate weight loss score with user profile
     df_with_scores = calculate_weight_loss_score(df_selected, user_profile=user_profile)
     print("weight loss scores------",df_with_scores)
     # Show distribution of WeightLossScore
     show_weight_loss_score_distribution(df_with_scores)
     # Classify meals as good or not good using 80th percentile threshold
-    df_classified = classify_meal_goodness_by_percentile(df_with_scores, percentile=0.5)
-    df_classified.to_csv('classified_meals.csv', index=False)
-    print('Number of good meals:', (df_classified['IsGoodMeal'] == 1).sum())
-    print('Number of non-good meals:', (df_classified['IsGoodMeal'] == 0).sum())
-   
+    
+    
     # Filter meal recipes
-    df_filtered = df_classified
     # filter_meal_recipes(df_classified)
     
     # Print and save top 10 entries of df_filtered to CSV for inspection
     print("\nTop 10 rows of data passed to KNN (df_filtered):")
-    print(df_filtered.head(10))
     # Add user info columns to the DataFrame before saving
-    df_to_save = df_filtered.copy()
+    df_to_save = df_with_scores.copy()
     df_to_save['BMI'] = user_profile['BMI']
     df_to_save['BMR'] = user_profile['BMR']
     df_to_save['Age'] = age
     df_to_save['Weight'] = weight_kg
-    df_to_save.to_csv('df_filtered_top10.csv', index=False)
-   
+    print("BMR-----------------",user_profile['BMR'])
+
+    print("Total number of meals--------:", len(df_to_save))
+    df_filtered = classify_meal_goodness_by_percentile(df_to_save, user_profile)
+    df_filtered.to_csv('df_combinedUser_data.csv', index=False)
+    
+    print('Number of good meals:', (df_filtered['IsGoodMeal'] == 1).sum())
+    print('Number of non-good meals:', (df_filtered['IsGoodMeal'] == 0).sum())
+    
     # Example user profile (static values)
     
     # Recommend meals for user

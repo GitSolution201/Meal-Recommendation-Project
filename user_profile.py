@@ -130,7 +130,7 @@ if __name__ == "__main__":
     profile = get_user_profile(
         age=30,
         gender="male",
-        weight_kg=80,
+        weight_kg=100,
         height_cm=175,
         activity_level="moderate",
         goal="moderate"

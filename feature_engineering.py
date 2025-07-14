@@ -40,35 +40,30 @@ def select_features_for_feature_Engineering(df):
 
 def calculate_weight_loss_score(df, user_profile=None):
     """
-    Calculate a weight loss score based on nutritional features and user profile.
+    Calculate a weight loss score based on nutritional features only.
     Higher scores indicate better suitability for weight loss.
-    
     Parameters:
     df (pandas.DataFrame): DataFrame with nutritional features
-    user_profile (dict): User profile with BMI, BMR, age, weight_kg, CalorieGoal
-    
+    user_profile (dict): (Unused here, only for personalized rules)
     Returns:
     pandas.DataFrame: DataFrame with added WeightLossScore column
     """
     # Make a copy to avoid modifying the original
     df_scored = df.copy()
-    
     # Create a copy of nutritional columns for scoring
     nutrition_cols = [
         'Calories', 'FatContent', 'SaturatedFatContent', 'CholesterolContent',
         'SodiumContent', 'CarbohydrateContent', 'FiberContent', 'SugarContent', 'ProteinContent'
     ]
     df_scored_for_scoring = df_scored[nutrition_cols].copy()
-    
     # Normalize features to 0-1 scale for scoring only
-    #This is important because features with larger ranges can dominate those with smaller ranges when calculating scores, distances, or when used in machine learning models.
+    from sklearn.preprocessing import MinMaxScaler
     scaler = MinMaxScaler()
     df_scored_for_scoring = pd.DataFrame(
         scaler.fit_transform(df_scored_for_scoring),
         columns=nutrition_cols,
         index=df_scored.index
     )
-    
     # Calculate base Weight Loss Score with weighted components using normalized values
     base_score = (
         10 * df_scored_for_scoring['ProteinContent'] +      # High priority (satiety)
@@ -81,44 +76,8 @@ def calculate_weight_loss_score(df, user_profile=None):
         2 * df_scored_for_scoring['SodiumContent'] -       # Blood pressure
         5 * df_scored_for_scoring['CarbohydrateContent']   # Energy balance
     )
-    
-    # Apply personalized adjustments if user profile is provided
-    if user_profile is not None:
-        # Calorie appropriateness adjustment (based on user's daily goal)
-        meal_calorie_target = user_profile['CalorieGoal'] * 0.3  # 30% for main meal
-        calorie_appropriateness = 1 - abs(df_scored['Calories'] - meal_calorie_target) / meal_calorie_target
-        calorie_appropriateness = np.clip(calorie_appropriateness, 0, 1)  # Clamp between 0 and 1
-        
-        # BMI-based adjustment (higher BMI = more emphasis on weight loss)
-        bmi_factor = min(user_profile['BMI'] / 25, 1.5)  # Normalize around BMI 25
-        
-        # Age-based adjustment (older users may need different considerations)
-        age_factor = 1.0
-        if user_profile['age'] > 50:
-            age_factor = 1.1  # Slightly higher emphasis on heart health for older users
-        
-        # BMR-based adjustment (higher BMR = can handle more calories)
-        bmr_factor = user_profile['BMR'] / 1500  # Normalize around typical BMR
-        
-        # Combine all adjustments
-        personalized_score = base_score * (
-            0.6 +  # Base weight
-            0.2 * calorie_appropriateness +  # Calorie appropriateness
-            0.1 * bmi_factor +              # BMI consideration
-            0.05 * age_factor +             # Age consideration
-            0.05 * bmr_factor               # BMR consideration
-        )
-        
-        df_scored['WeightLossScore'] = personalized_score
-    else:
-        # Use base score if no user profile provided
-        df_scored['WeightLossScore'] = base_score
-    
-    # Normalize the final score to 0-1 range
-    # if 'WeightLossScore' in df_scored.columns:
-    #     scaler_final = MinMaxScaler()
-    #     df_scored['WeightLossScore'] = scaler_final.fit_transform(df_scored[['WeightLossScore']])
-
+    # Only use base score (no user profile adjustment)
+    df_scored['WeightLossScore'] = base_score
     return df_scored
 
 def filter_meal_recipes(df):
@@ -182,19 +141,18 @@ def show_weight_loss_score_distribution(df):
     plt.legend()
     plt.show()
 
-def classify_meal_goodness_by_percentile(df, percentile=0.5):
+def classify_meal_goodness_by_percentile(df, user_profile=None):
     """
-    Classify meals as good (1) or not good (0) based on whether WeightLossScore is above the given percentile.
+    Assign IsGoodMeal randomly for testing model performance with random labels.
     Args:
-        df (pd.DataFrame): DataFrame with WeightLossScore column
-        percentile (float): Percentile threshold (e.g., 0.8 for top 20%)
+        df (pd.DataFrame): DataFrame with WeightLossScore and nutritional columns
+        user_profile (dict): (Unused)
     Returns:
         pd.DataFrame: DataFrame with IsGoodMeal column
     """
+    import numpy as np
     df = df.copy()
-    threshold = df['WeightLossScore'].quantile(percentile)
-    print(f"Using {percentile*100:.0f}th percentile threshold {threshold:.3f} for IsGoodMeal classification.")
-    df['IsGoodMeal'] = (df['WeightLossScore'] > threshold).astype(int)
+    df['IsGoodMeal'] = np.random.randint(0, 2, size=len(df))
     return df
 
 if __name__ == "__main__":
@@ -214,7 +172,7 @@ if __name__ == "__main__":
     # Calculate weight loss score with user profile
     df_scored = calculate_weight_loss_score(df_selected, user_profile=example_user_profile)
     show_weight_loss_score_distribution(df_scored)
-    df_classified = classify_meal_goodness_by_percentile(df_scored, percentile=0.8)
+    df_classified = classify_meal_goodness_by_percentile(df_scored, user_profile=example_user_profile)
     print("--------------------",df_classified[['WeightLossScore', 'IsGoodMeal']].head())
     df_classified.to_csv('classified_meals.csv', index=False)
     # Print the number of good and non-good meals

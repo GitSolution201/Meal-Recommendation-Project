@@ -10,7 +10,7 @@ import os
 import requests
 
 # Load classified meals data
-meals = pd.read_csv('classified_meals.csv')
+meals = pd.read_csv('df_combinedUser_data.csv')
 
 # Add user features (example values, replace with actual user data as needed)
 # These lines should be removed if you do not have actual user data for these features.
@@ -22,7 +22,7 @@ meals = pd.read_csv('classified_meals.csv')
 features = [
     'Calories', 'FatContent', 'SaturatedFatContent', 'CholesterolContent',
     'SodiumContent', 'CarbohydrateContent', 'FiberContent', 'SugarContent', 'ProteinContent',
-    # 'BMI', 'BMR', 'age', 'weight_kg'
+
 ]
 
 X = meals[features]
