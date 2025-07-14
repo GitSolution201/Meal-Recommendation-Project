@@ -48,7 +48,9 @@ def get_user_profile(age, gender, weight_kg, height_cm, activity_level="moderate
         'TDEE': round(tdee),
         'CalorieGoal': round(calorie_goal),
         'ActivityLevel': activity_level,
-        'WeightGoal': goal
+        'WeightGoal': goal,
+        'age': age,                # <-- add this line
+        'weight_kg': weight_kg     
     }
 
 def get_bmi_category(bmi):

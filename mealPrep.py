@@ -44,8 +44,23 @@ def main():
     # Select features for feature engineering
     
     df_selected = select_features_for_feature_Engineering(df_cleaned)
-    # Calculate weight loss score
-    df_with_scores = calculate_weight_loss_score(df_selected)
+    age = 89
+    gender = "female"
+    weight_kg = 100
+    height_cm = 175
+    activity_level = "moderate"
+    goal = "moderate"
+    user_profile = get_user_profile(
+        age=age,
+        gender=gender,
+        weight_kg=weight_kg,
+        height_cm=height_cm,
+        activity_level=activity_level,
+        goal=goal
+    )
+   
+    # Calculate weight loss score with user profile
+    df_with_scores = calculate_weight_loss_score(df_selected, user_profile=user_profile)
     print("weight loss scores------",df_with_scores)
     # Show distribution of WeightLossScore
     show_weight_loss_score_distribution(df_with_scores)
@@ -60,21 +75,7 @@ def main():
     print("\nTop 10 rows of data passed to KNN (df_filtered):")
     print(df_filtered.head(10))
     # Add user info columns to the DataFrame before saving
-    age = 89
-    gender = "female"
-    weight_kg = 180
-    height_cm = 175
-    activity_level = "light"
-    goal = "moderate"
-    user_profile = get_user_profile(
-        age=age,
-        gender=gender,
-        weight_kg=weight_kg,
-        height_cm=height_cm,
-        activity_level=activity_level,
-        goal=goal
-    )
-    df_to_save = df_filtered.head(40).copy()
+    df_to_save = df_filtered.copy()
     df_to_save['BMI'] = user_profile['BMI']
     df_to_save['BMR'] = user_profile['BMR']
     df_to_save['Age'] = age
