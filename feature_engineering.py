@@ -71,7 +71,7 @@ def calculate_weight_loss_score(df, user_profile=None):
     
     # Calculate base Weight Loss Score with weighted components using normalized values
     base_score = (
-        5 * df_scored_for_scoring['ProteinContent'] +      # High priority (satiety)
+        10 * df_scored_for_scoring['ProteinContent'] +      # High priority (satiety)
         5 * df_scored_for_scoring['FiberContent'] -        # Fullness and digestion
         5 * df_scored_for_scoring['FatContent'] -          # Calorie density
         5 * df_scored_for_scoring['SugarContent'] -        # Blood sugar spikes
