@@ -5,7 +5,8 @@ from feature_engineering import (
     calculate_weight_loss_score,
     filter_meal_recipes,
     show_weight_loss_score_distribution,
-    classify_meal_goodness_by_percentile
+    
+    classify_meal_goodness_by_percentile_random_users
 )
 from meal_recommendations import show_best_worst_meals, recommend_meals_for_user, precision_at_k_knn, recall_at_k_knn
 from user_profile import get_user_profile
@@ -44,23 +45,10 @@ def main():
     # Select features for feature engineering
     
     df_selected = select_features_for_feature_Engineering(df_cleaned)
-    age = 40
-    gender = "male"
-    weight_kg = 120
-    height_cm = 175
-    activity_level = "moderate"
-    goal = "moderate"
-    user_profile = get_user_profile(
-        age=age,
-        gender=gender,
-        weight_kg=weight_kg,
-        height_cm=height_cm,
-        activity_level=activity_level,
-        goal=goal
-    )
+    
 
     # Calculate weight loss score with user profile
-    df_with_scores = calculate_weight_loss_score(df_selected, user_profile=user_profile)
+    df_with_scores = calculate_weight_loss_score(df_selected)
     print("weight loss scores------",df_with_scores)
     # Show distribution of WeightLossScore
     show_weight_loss_score_distribution(df_with_scores)
@@ -73,17 +61,13 @@ def main():
     # Print and save top 10 entries of df_filtered to CSV for inspection
     print("\nTop 10 rows of data passed to KNN (df_filtered):")
     # Add user info columns to the DataFrame before saving
-    df_to_save = df_with_scores.copy()
-    df_to_save['BMI'] = user_profile['BMI']
-    df_to_save['BMR'] = user_profile['BMR']
-    df_to_save['Age'] = age
-    df_to_save['Weight'] = weight_kg
-    print("BMR-----------------",user_profile['BMR'])
-
-    print("Total number of meals--------:", len(df_to_save))
-    df_filtered = classify_meal_goodness_by_percentile(df_to_save, user_profile)
+  
+    # print("Total number of meals--------:", len(df_to_save))
+    # Replace the call to classify_meal_goodness_by_percentile with the new function
+    # df_filtered = classify_meal_goodness_by_percentile(df_to_save, user_profile)
+    df_filtered = classify_meal_goodness_by_percentile_random_users(df_with_scores)
     df_filtered.to_csv('df_combinedUser_data.csv', index=False)
-    
+
     print('Number of good meals:', (df_filtered['IsGoodMeal'] == 1).sum())
     print('Number of non-good meals:', (df_filtered['IsGoodMeal'] == 0).sum())
     
@@ -106,7 +90,20 @@ def main():
     'ProteinContent'
 ]
     # inputing features that defines the similarity / distance between meals 
-    
+    age = 40
+    gender = "male"
+    weight_kg = 120
+    height_cm = 175
+    activity_level = "moderate"
+    goal = "moderate"
+    user_profile = get_user_profile(
+        age=age,
+        gender=gender,
+        weight_kg=weight_kg,
+        height_cm=height_cm,
+        activity_level=activity_level,
+        goal=goal
+    )
     knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=3)
     print(knn_recommendations[['Name'] + knn_features])
 

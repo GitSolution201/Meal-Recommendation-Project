@@ -5,12 +5,12 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 
 # Load the meal data
-df = pd.read_csv('classified_meals.csv')
+df = pd.read_csv('df_combinedUser_data.csv')
 
 # Select features and target
 features = [
     'Calories', 'FatContent', 'SaturatedFatContent', 'CholesterolContent',
-    'SodiumContent', 'CarbohydrateContent', 'FiberContent', 'SugarContent', 'ProteinContent'
+    'SodiumContent', 'CarbohydrateContent', 'FiberContent', 'SugarContent', 'ProteinContent','WeightLossScore'
 ]
 X = df[features]
 y = df['IsGoodMeal']

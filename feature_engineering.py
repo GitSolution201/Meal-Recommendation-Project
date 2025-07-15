@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+import random
 
 def select_features_for_feature_Engineering(df):
     """
@@ -141,18 +142,65 @@ def show_weight_loss_score_distribution(df):
     plt.legend()
     plt.show()
 
-def classify_meal_goodness_by_percentile(df, user_profile=None):
+def random_user_profile():
+    age = random.randint(15, 40)
+    weight_kg = random.randint(40, 150)
+    gender = random.choice(['male', 'female'])
+    height_cm = random.randint(150, 200)
+    # Simple BMI calculation
+    bmi = weight_kg / ((height_cm / 100) ** 2)
+    # Simple BMR calculation (Mifflin-St Jeor Equation)
+    if gender == 'male':
+        bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
+    else:
+        bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age - 161
+    calorie_goal = int(bmr * random.uniform(1.2, 1.5))
+    return {
+        'BMI': bmi,
+        'BMR': bmr,
+        'age': age,
+        'weight_kg': weight_kg,
+        'gender': gender,
+        'CalorieGoal': calorie_goal
+    }
+
+def is_good_meal(meal, user_profile):
+    meal_target_calories = user_profile['BMR'] * 1 / 3
+    protein_target = user_profile['weight_kg'] * 0.2 / 3  # Example threshold
+    fiber_threshold = 3  # Example threshold
+    wls_threshold = 0.5  # Example threshold
+
+    return (
+        abs(meal['Calories'] - meal_target_calories) < 0.5 * meal_target_calories or
+        meal['ProteinContent'] >= protein_target and
+        meal['FiberContent'] >= fiber_threshold and
+        meal['WeightLossScore'] > wls_threshold
+    )
+
+def classify_meal_goodness_by_percentile_random_users(df):
     """
-    Assign IsGoodMeal randomly for testing model performance with random labels.
-    Args:
-        df (pd.DataFrame): DataFrame with WeightLossScore and nutritional columns
-        user_profile (dict): (Unused)
-    Returns:
-        pd.DataFrame: DataFrame with IsGoodMeal column
+    For every 5 meals, generate a new random user profile and classify meals accordingly.
+    Also save the user profile (age, weight_kg, gender, BMI, BMR) for each meal.
     """
-    import numpy as np
     df = df.copy()
-    df['IsGoodMeal'] = np.random.randint(0, 2, size=len(df))
+    user_profiles = [random_user_profile() for _ in range((len(df) // 5) + 1)]
+    is_good_list = []
+    ages, weights, genders, bmis, bmrs = [], [], [], [], []
+    for i, (_, meal) in enumerate(df.iterrows()):
+        user_profile = user_profiles[i // 5]
+        is_good = is_good_meal(meal, user_profile)
+        is_good_list.append(int(is_good))
+        ages.append(user_profile['age'])
+        weights.append(user_profile['weight_kg'])
+        genders.append(user_profile['gender'])
+        bmis.append(user_profile['BMI'])
+        bmrs.append(user_profile['BMR'])
+    df['IsGoodMeal'] = is_good_list
+    df['UserAge'] = ages
+    df['UserWeight'] = weights
+    df['UserGender'] = genders
+    df['UserBMI'] = bmis
+    df['UserBMR'] = bmrs
     return df
 
 if __name__ == "__main__":
@@ -172,9 +220,9 @@ if __name__ == "__main__":
     # Calculate weight loss score with user profile
     df_scored = calculate_weight_loss_score(df_selected, user_profile=example_user_profile)
     show_weight_loss_score_distribution(df_scored)
-    df_classified = classify_meal_goodness_by_percentile(df_scored, user_profile=example_user_profile)
+    df_classified = classify_meal_goodness_by_percentile_random_users(df_scored)
     print("--------------------",df_classified[['WeightLossScore', 'IsGoodMeal']].head())
-    df_classified.to_csv('classified_meals.csv', index=False)
+    df_classified.head(40).to_csv('classified_meals.csv', index=False)
     # Print the number of good and non-good meals
     print('Number of good meals:', (df_classified['IsGoodMeal'] == 1).sum())
     print('Number of non-good meals:', (df_classified['IsGoodMeal'] == 0).sum())

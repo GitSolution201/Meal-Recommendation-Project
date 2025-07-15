@@ -20,9 +20,8 @@ meals = pd.read_csv('df_combinedUser_data.csv')
 
 # Features to use (all available nutrition columns + user features)
 features = [
-    'Calories', 'FatContent', 'SaturatedFatContent', 'CholesterolContent',
-    'SodiumContent', 'CarbohydrateContent', 'FiberContent', 'SugarContent', 'ProteinContent',
-
+   'Calories', 'FatContent', 'SaturatedFatContent', 'CholesterolContent','SodiumContent', 'CarbohydrateContent',
+     'FiberContent', 'SugarContent', 'ProteinContent','WeightLossScore'
 ]
 
 X = meals[features]
