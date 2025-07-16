@@ -1,13 +1,17 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split, learning_curve
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
+from sklearn.svm import LinearSVC
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Load the meal data
 df = pd.read_csv('df_combinedUser_data.csv')
+
+# Sample 20,000 rows for SVM training
+if len(df) > 100000:
+    df = df.sample(n=100000, random_state=42)
 
 # Select features and target
 features = [
@@ -27,8 +31,8 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# Train SVM classifier (RBF kernel)
-clf = SVC(kernel='rbf', random_state=42)
+# Train Linear SVM classifier (much faster for large data)
+clf = LinearSVC(random_state=42, max_iter=5000)
 clf.fit(X_train_scaled, y_train)
 
 y_pred = clf.predict(X_test_scaled)
@@ -41,10 +45,10 @@ print('Confusion Matrix:\n', confusion_matrix(y_test, y_pred))
 cm = confusion_matrix(y_test, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm)
 disp.plot(cmap='Blues')
-plt.title('Confusion Matrix (SVM)')
+plt.title('Confusion Matrix (Linear SVM)')
 plt.show()
 
-# Plot learning curve for SVM
+# Plot learning curve for Linear SVM
 train_sizes, train_scores, test_scores = learning_curve(
     clf, X_train_scaled, y_train, cv=5, scoring='accuracy', n_jobs=-1,
     train_sizes=np.linspace(0.1, 1.0, 10), random_state=42
@@ -61,7 +65,7 @@ plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
                  train_scores_mean + train_scores_std, alpha=0.1, color='r')
 plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
                  test_scores_mean + test_scores_std, alpha=0.1, color='g')
-plt.title('Learning Curve for SVM')
+plt.title('Learning Curve for Linear SVM')
 plt.xlabel('Training Set Size')
 plt.ylabel('Accuracy')
 plt.legend(loc='best')
