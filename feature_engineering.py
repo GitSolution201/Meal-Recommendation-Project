@@ -68,13 +68,13 @@ def calculate_weight_loss_score(df, user_profile=None):
     # Calculate base Weight Loss Score with weighted components using normalized values
     base_score = (
         10 * df_scored_for_scoring['ProteinContent'] +      # High priority (satiety)
-        5 * df_scored_for_scoring['FiberContent'] -        # Fullness and digestion
+        10 * df_scored_for_scoring['FiberContent'] -        # Fullness and digestion
         5 * df_scored_for_scoring['FatContent'] -          # Calorie density
         5 * df_scored_for_scoring['SugarContent'] -        # Blood sugar spikes
-        5 * df_scored_for_scoring['Calories'] -            # Overall calorie control
+        2 * df_scored_for_scoring['Calories'] -            # Overall calorie control
         5 * df_scored_for_scoring['SaturatedFatContent'] - # Heart health
         5 * df_scored_for_scoring['CholesterolContent'] +  # Heart health
-        2 * df_scored_for_scoring['SodiumContent'] -       # Blood pressure
+        5 * df_scored_for_scoring['SodiumContent'] -       # Blood pressure
         5 * df_scored_for_scoring['CarbohydrateContent']   # Energy balance
     )
     # Only use base score (no user profile adjustment)
@@ -169,12 +169,20 @@ def is_good_meal(meal, user_profile):
     protein_target = user_profile['weight_kg'] * 0.2 / 3  # Example threshold
     fiber_threshold = 3  # Example threshold
     wls_threshold = 0.5  # Example threshold
+    age = user_profile['age']
+    weight = user_profile['weight_kg']
+
+    # Age/weight-based personalization
+    protein_priority = (20 <= age <= 30) and (weight < 60) and (meal['ProteinContent'] >= protein_target * 1.2)
+    fiber_priority = (30 < age <= 40) and (meal['FiberContent'] >= fiber_threshold * 1.2)
 
     return (
         abs(meal['Calories'] - meal_target_calories) < 0.5 * meal_target_calories or
-        meal['ProteinContent'] >= protein_target and
-        meal['FiberContent'] >= fiber_threshold and
-        meal['WeightLossScore'] > wls_threshold
+        (meal['ProteinContent'] >= protein_target and 
+         meal['FiberContent'] >= fiber_threshold and
+        meal['WeightLossScore'] > wls_threshold) or
+        protein_priority or
+        fiber_priority
     )
 
 def classify_meal_goodness_by_percentile_random_users(df):

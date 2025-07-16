@@ -11,7 +11,7 @@ import requests
 
 # Load classified meals data
 meals = pd.read_csv('df_combinedUser_data.csv')
-
+print("Number of entries in the dataset:", len(meals))
 # Add user features (example values, replace with actual user data as needed)
 # These lines should be removed if you do not have actual user data for these features.
 # Setting them to constant values for all samples does not add any useful information to your model and can even harm its performance or create misleading results.
@@ -34,7 +34,14 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # Train classification model
-clf = RandomForestClassifier(random_state=42)
+clf = RandomForestClassifier(
+    n_estimators=100,
+    max_depth=10,
+    min_samples_leaf=10,
+    min_samples_split=10,
+    max_features='sqrt',
+    random_state=42
+)
 clf.fit(X_train, y_train)
 
 # Evaluate

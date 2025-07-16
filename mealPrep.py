@@ -104,7 +104,7 @@ def main():
         activity_level=activity_level,
         goal=goal
     )
-    knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=3)
+    knn_recommendations = knn_recommend_meals(df_filtered, user_profile, knn_features, n_neighbors=5)
     print(knn_recommendations[['Name'] + knn_features])
 
     # --- Precision and Recall for KNN ---
