@@ -10,8 +10,8 @@ import numpy as np
 df = pd.read_csv('df_combinedUser_data.csv')
 
 # Sample 20,000 rows for SVM training
-if len(df) > 100000:
-    df = df.sample(n=100000, random_state=42)
+if len(df) > 200000:
+    df = df.sample(n=200000, random_state=42)
 
 # Select features and target
 features = [
