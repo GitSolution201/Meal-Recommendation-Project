@@ -66,6 +66,7 @@ def main():
     # Replace the call to classify_meal_goodness_by_percentile with the new function
     # df_filtered = classify_meal_goodness_by_percentile(df_to_save, user_profile)
     df_filtered = classify_meal_goodness_by_percentile_random_users(df_with_scores)
+    print("df_filtered------------------",df_filtered)
     df_filtered.head(100).to_csv('df_combinedUser_data_sample.csv', index=False)
 
     print('Number of good meals:', (df_filtered['IsGoodMeal'] == 1).sum())
