@@ -36,8 +36,8 @@ const typeDefs = gql`
     lastName: String!
     age: Int!
     gender: String!
-    weightKg: Float!
-    heightCm: Float!
+    weightKg: String!
+    heightCm: String!
     activityLevel: String!
     weightGoal: String!
   }
