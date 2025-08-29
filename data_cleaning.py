@@ -60,12 +60,12 @@ def perform_EDA(df):
     # 10. Handle Images - fill missing values with empty string
     df_clean['Images'] = df_clean['Images'].fillna("")
     
-    # Print summary of changes
-    # print("\nData Cleaning Summary:")
-    # print(f"Original shape: {df.shape}")
-    # print(f"New shape: {df_clean.shape}")
-    # print("\nMissing values after cleaning:")
-    # print(df_clean.isnull().sum().sort_values(ascending=False))
+    #Print summary of changes
+    print("\nData Cleaning Summary:")
+    print(f"Original shape: {df.shape}")
+    print(f"New shape: {df_clean.shape}")
+    print("\nMissing values after cleaning:")
+    print(df_clean.isnull().sum().sort_values(ascending=False))
     
     return df_clean
 

@@ -34,6 +34,8 @@ def main():
     
     # Perform EDA and cleaning
     df_cleaned = perform_EDA(df)
+    check_data_quality(df_cleaned)
+    
     print(df_cleaned.columns)
 
     # Call EDA graphs function
@@ -67,7 +69,7 @@ def main():
     # df_filtered = classify_meal_goodness_by_percentile(df_to_save, user_profile)
     df_filtered = classify_meal_goodness_by_percentile_random_users(df_with_scores)
     print("df_filtered------------------",df_filtered)
-    df_filtered.head(100).to_csv('df_combinedUser_data_sample.csv', index=False)
+    df_filtered.to_csv('df_combinedUser_data.csv', index=False)
 
     print('Number of good meals:', (df_filtered['IsGoodMeal'] == 1).sum())
     print('Number of non-good meals:', (df_filtered['IsGoodMeal'] == 0).sum())
