@@ -2,6 +2,20 @@
 
 An intelligent machine learning-based meal recommendation system that classifies meals as "good" or "bad" based on nutritional analysis and provides personalized dietary suggestions for weight management.
 
+## 📊 Dataset Download
+
+**⚠️ IMPORTANT: Download the required dataset before running the project**
+
+To run this project, you need to download the required dataset:
+
+**Food.com Recipes and Reviews Dataset**
+- **Source**: [Kaggle Dataset](https://www.kaggle.com/datasets/irkaal/foodcom-recipes-and-reviews)
+- **Description**: Contains comprehensive recipe data with nutritional information, ingredients, and reviews
+- **Size**: ~1.2GB (compressed)
+- **Files Needed**: 
+  - `recipes.csv` - Main recipe data with nutritional information
+  - `reviews.csv` - User reviews and ratings
+
 ## 🚀 Quick Start
 
 ### First Time Setup
